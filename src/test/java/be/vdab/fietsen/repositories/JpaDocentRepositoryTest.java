@@ -2,6 +2,7 @@ package be.vdab.fietsen.repositories;
 
 import be.vdab.fietsen.domain.Docent;
 import be.vdab.fietsen.domain.Geslacht;
+import be.vdab.fietsen.projections.AantalDocentenPerWedde;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -86,7 +87,22 @@ class JpaDocentRepositoryTest extends AbstractTransactionalJUnit4SpringContextTe
     void findIdsEnEmailAdressen() {
         assertThat(repository.findIdsEnEmailAdressen()) .hasSize(countRowsInTable(DOCENTEN));
     }
-
+    @Test
+    void findGrootsteWedde() {
+        assertThat(repository.findGrootsteWedde()).isEqualByComparingTo(
+                jdbcTemplate.queryForObject("select max(wedde) from docenten",BigDecimal.class));
+    }
+    @Test
+    void findAantalDocentenPerWedde() {
+        var duizend = BigDecimal.valueOf(1_000);
+        assertThat(repository.findAantalDocentenPerWedde())
+                .hasSize(jdbcTemplate.queryForObject(
+                        "select count(distinct wedde) from docenten", Integer.class))
+                .filteredOn( aantalPerWedde -> aantalPerWedde.getWedde().compareTo(duizend) == 0)
+                .singleElement()
+                .extracting(AantalDocentenPerWedde::getAantal)
+                .isEqualTo((long) super.countRowsInTableWhere(DOCENTEN, "wedde = 1000"));
+    }
 
 
 

@@ -1,6 +1,7 @@
 package be.vdab.fietsen.repositories;
 
 import be.vdab.fietsen.domain.Docent;
+import be.vdab.fietsen.projections.AantalDocentenPerWedde;
 import be.vdab.fietsen.projections.IdEnEmailAdres;
 
 import java.math.BigDecimal;
@@ -15,4 +16,7 @@ public interface DocentRepository {
     List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot);
     List<String> findEmailAdressen();
     List<IdEnEmailAdres> findIdsEnEmailAdressen();
+    BigDecimal findGrootsteWedde();
+    List<AantalDocentenPerWedde> findAantalDocentenPerWedde();
+
 }

@@ -1,6 +1,7 @@
 package be.vdab.fietsen.repositories;
 
 import be.vdab.fietsen.domain.Docent;
+import be.vdab.fietsen.projections.AantalDocentenPerWedde;
 import be.vdab.fietsen.projections.IdEnEmailAdres;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +34,9 @@ public class JpaDocentRepository implements DocentRepository {
 
     @Override
     public List<Docent> findByWeddeBetween(BigDecimal van, BigDecimal tot) {
-        return manager.createQuery( "select d from Docent d where d.wedde between :van and :tot", Docent.class) .setParameter("van", van) .setParameter("tot", tot) .getResultList();
+        //return manager.createQuery( "select d from Docent d where d.wedde between :van and :tot", Docent.class) .setParameter("van", van) .setParameter("tot", tot) .getResultList();
+        // Bovenstaande wordt vervangen door een nameQuery uit de class Docent --> zie @NamedQuery
+        return manager.createNamedQuery("Docent.findByWeddeBetween", Docent.class).setParameter("van", van) .setParameter("tot", tot) .getResultList();
     }
 
     @Override
@@ -45,5 +48,19 @@ public class JpaDocentRepository implements DocentRepository {
     public List<IdEnEmailAdres> findIdsEnEmailAdressen() {
         return manager.createQuery(
                 "select new be.vdab.fietsen.projections.IdEnEmailAdres(d.id, d.emailAdres)" + "from Docent d",
-                IdEnEmailAdres.class).getResultList(); }
+                IdEnEmailAdres.class).getResultList();
+    }
+    @Override
+    public BigDecimal findGrootsteWedde() {
+        return manager.createQuery("select max(d.wedde) from Docent d", BigDecimal.class)
+                .getSingleResult();
+    }
+    @Override
+    public List<AantalDocentenPerWedde> findAantalDocentenPerWedde() {
+        return manager.createQuery(
+                "select new be.vdab.fietsen.projections.AantalDocentenPerWedde(" + "d.wedde,count(d)) " +
+                        "from Docent d group by d.wedde", AantalDocentenPerWedde.class)
+                .getResultList();
+    }
+
 }
