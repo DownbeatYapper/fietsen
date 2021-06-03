@@ -1,6 +1,7 @@
 package be.vdab.fietsen.repositories;
 
 import be.vdab.fietsen.domain.Docent;
+import be.vdab.fietsen.projections.IdEnEmailAdres;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -40,4 +41,9 @@ public class JpaDocentRepository implements DocentRepository {
         return manager.createQuery("select d.emailAdres from Docent d", String.class) .getResultList();
     }
 
+    @Override
+    public List<IdEnEmailAdres> findIdsEnEmailAdressen() {
+        return manager.createQuery(
+                "select new be.vdab.fietsen.projections.IdEnEmailAdres(d.id, d.emailAdres)" + "from Docent d",
+                IdEnEmailAdres.class).getResultList(); }
 }
