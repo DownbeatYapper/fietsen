@@ -3,7 +3,7 @@ package be.vdab.fietsen.domain;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
+//test voor gitHub
 @Entity
 @Table(name = "docenten")
     public class Docent {
